@@ -1,2 +1,28 @@
 # 2015cnlfinal
 distributed chat room system
+
+
+05/21 by jimmy Huang
+
+[announcement]
+
+    --We are going to use python to implement our application.
+
+    --Here is a tool in python which can define our own protocal on udp: 
+
+        https://twistedmatrix.com/documents/current/core/howto/udp.html
+
+[Milestone 1] -- due on 5/27
+
+    -- implement our protocal in the same network
+    
+        - protocal detail: port, time, ....
+        
+        - table format
+        
+        - make sure it can run
+        
+    -- some need to compare our network structure with firechat
+    
+    -- some need to search for if there are any paper related to our work
+
