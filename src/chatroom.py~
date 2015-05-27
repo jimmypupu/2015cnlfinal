@@ -1,4 +1,4 @@
 
 
-def chatroom():
+def chatroom
 	print "Chatroom"

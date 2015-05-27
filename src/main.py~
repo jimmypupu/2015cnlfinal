@@ -1,4 +1,12 @@
 import chatroom
 import protocol
+import sys
 
-chatroom()
+
+
+def main():
+    print "Hello"
+    chatroom()
+
+if __name__ == "__main__":
+    main()
