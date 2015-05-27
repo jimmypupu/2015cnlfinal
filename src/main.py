@@ -5,7 +5,7 @@ import sys
 
 
 def main():
-    print "Hello"
+    print "Hello world"
     chatroom.chatroom()
 
 if __name__ == "__main__":
