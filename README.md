@@ -17,3 +17,7 @@ Distributed chat room system
     - make sure it can run
 - some need to compare our network structure with firechat
 - some need to search for if there are any paper related to our work
+- 
+
+## Related works
+- http://blog.bittorrent.com/2011/06/30/uchat-we-just-need-each-other/
