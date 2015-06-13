@@ -23,7 +23,7 @@ class Cipher():
             ciphertext = []
             for i in range(0, len(plain), 250):
                 # The second argument is useless.
-                ciphertext.append(self.rsa.encrypt(plain[i:i+250], 0))
+                ciphertext.append(self.rsa.encrypt(plain[i:i+250], 0)[0])
 
             return ciphertext
         else:
@@ -45,6 +45,11 @@ class Cipher():
         sha = SHA256.new()
         sha.update(self.rsa.publickey().exportKey('DER'))
         return sha.digest()
+
+    def get_publickey(self):
+        """returns the public of this object.
+        """
+        return self.rsa.publickey().exportKey('DER')
 
 
 def main():
