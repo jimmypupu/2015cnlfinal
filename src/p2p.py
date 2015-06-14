@@ -137,7 +137,7 @@ def receiver(threadName):
             fing_table[broadfinger][3] = 0
         exit_flag = 0
 
-        if len(ip) >= 2 && exists == 0:
+        if len(ip) >= 2 and exists == 0:
             packet = ""
             tmp = str(socket.gethostbyname(socket.gethostname()))   #add address
             for i in range(0, 15-len(tmp)):
@@ -145,7 +145,7 @@ def receiver(threadName):
             packet += data[15:19]                                     #public key len
             packet += broadpublic                                   #public key 
             packet += broadfinger                                   #hop number
-            tmp = str(hopnum+1)
+            tmp = str(broadhop+1)
             for i in range(0, 4-len(tmp)):                          
                 tmp = "0"+tmp
             packet += tmp
