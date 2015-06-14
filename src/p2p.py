@@ -121,33 +121,36 @@ def receiver(threadName):
         if itself == 1:
             continue
 
-        if len(ip) >= 2:
-            packet = ""
-            tmp = str(socket.gethostbyname(socket.gethostname()))   #add address
-            for i in range(0, 15-len(tmp)):
-                tmp = "0"+tmp
-            packet += broadplen                                     #public key len
-            packet += broadpublic                                   #public key 
-            packet += broadfinger                                   #hop number
-            tmp = str(hopnum+1) 
-            for i in range(0, 4-len(tmp)):                          
-                tmp = "0"+tmp
-            packet += tmp
-            if UDPSock.sendto(packet, addr):
-                print "%s: Transfer message ..." %threadName
-
         while exit_flag == 1:
             sleep(1)
         exit_flag = 1
+        exists = 0
         if broadfinger not in fing_table:
             print "%s: Find new node from addr %s" %(threadName, broadaddr)
             fing_table[broadfinger] = [broadaddr, broadhop, broadpublic, 0]
         else:
 #            print "%s: Refresh an old node from addr %s" %(threadName, broadaddr)
+            exists = 1
             if fing_table[broadfinger][1] < broadhop:
+                exists = 0
                 fing_table[broadfinger] = [broadaddr, broadhop, broadpublic, 0]
             fing_table[broadfinger][3] = 0
         exit_flag = 0
+
+        if len(ip) >= 2 && exists == 0:
+            packet = ""
+            tmp = str(socket.gethostbyname(socket.gethostname()))   #add address
+            for i in range(0, 15-len(tmp)):
+                tmp = "0"+tmp
+            packet += data[15:19]                                     #public key len
+            packet += broadpublic                                   #public key 
+            packet += broadfinger                                   #hop number
+            tmp = str(hopnum+1)
+            for i in range(0, 4-len(tmp)):                          
+                tmp = "0"+tmp
+            packet += tmp
+            if UDPSock.sendto(packet, addr):
+                print "%s: Transfer message ..." %threadName
 #        print "%s: From addr: '%s'" %(threadName, addr[0])
 #        print "%s: hop number = %s" %(threadName, broadhop)
     UDPSock.close()
