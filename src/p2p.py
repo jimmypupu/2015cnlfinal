@@ -191,10 +191,13 @@ def tcp_receiver(threadName):
         conn.close()
 
 thread1 = broadcast_thread(1, "Broadcast_thread")
+thread1.daemon = True
 thread1.start()
 thread2 = receiver_thread(2, "Receiver_thread")
+thread2.daemon = True
 thread2.start()
 thread3 = Tcp_receiver(3, "TCP_receiver")
+thread3.daemon = True
 thread3.start()
 
 #main part:
