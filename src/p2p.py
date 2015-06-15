@@ -25,7 +25,8 @@ for i in network:
     	print '   cidr:', cidr
     	print 'network:', network
         if str(address) != "127.0.0.1":
-            ip.append((str(address), str(network)))
+            ips = netaddr.IPNetwork(str(cidr))
+            ip.append((str(address), str(ips.broadcast)))
     except BaseException:
         pass
 print ip
