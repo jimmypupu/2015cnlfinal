@@ -136,8 +136,8 @@ def receiver(threadName):
     while True:
         data, addr = UDPSock.recvfrom(1024)
         i = 0
-        print addr
-        print data
+#        print addr
+#        print data
         broadaddr = addr[0]
         broadplen = int(data[15:19])
         broadpublic = data[19:(19+broadplen)]
@@ -182,7 +182,7 @@ def receiver(threadName):
             packet += tmp
             for i in addrb:
                 UDPSock.sendto(packet, i)
-                print "%s: Transfer message ..." %threadName
+                print "%s: Transfer message to %s..." %(threadName, i)
 #        print "%s: From addr: '%s'" %(threadName, addr[0])
 #        print "%s: hop number = %s" %(threadName, broadhop)
     UDPSock.close()
