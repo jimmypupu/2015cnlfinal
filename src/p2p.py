@@ -12,21 +12,20 @@ network = netifaces.interfaces()
 ip = []
 for i in network:
     try:
-	addrs = netifaces.ifaddresses(i)
-	ipinfo = addrs[socket.AF_INET][0]
-	address = ipinfo['addr']
-	netmask = ipinfo['netmask']
-	cidr = netaddr.IPNetwork('%s/%s' % (address, netmask))
-	network = cidr.network
-	print 'Network info for %s:' % i
-	print '--'
-	print 'address:', address
-	print 'netmask:', netmask
-	print '   cidr:', cidr
-	print 'network:', network
-#        tmp = netifaces.ifaddresses(i)[2][0]['addr']
+    	addrs = netifaces.ifaddresses(i)
+    	ipinfo = addrs[socket.AF_INET][0]
+    	address = ipinfo['addr']
+    	netmask = ipinfo['netmask']
+    	cidr = netaddr.IPNetwork('%s/%s' % (address, netmask))
+    	network = cidr.network
+    	print 'Network info for %s:' % i
+    	print '--'
+    	print 'address:', address
+    	print 'netmask:', netmask
+    	print '   cidr:', cidr
+    	print 'network:', network
         if str(address) != "127.0.0.1":
-            ip.append(str(network))
+            ip.append((str(address), str(network)))
     except BaseException:
         pass
 print ip
@@ -74,7 +73,7 @@ def broadcast(threadName):
     addr = []
     print ip
     for i in ip:
-        addr.append((i, 33333))
+        addr.append((i[1], 33333))
     print addr
 #    addr = ('255.255.255.255', 33333)
     UDPSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Create socket
@@ -180,7 +179,8 @@ def tcp_receiver(threadName):
     global exit_flag
     global c
     global fingerprint
-    TCP_IP = ip[0]
+    global ip
+    TCP_IP = ip[0][1]
     TCP_PORT = 33333
     BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
