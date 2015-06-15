@@ -59,8 +59,10 @@ def broadcast(threadName):
     global ip
     exit_flag = 0
     addr = []
+    print ip
     for i in ip:
-        addr = addr.append((i, 33333))
+        addr.append((i, 33333))
+    print addr
 #    addr = ('255.255.255.255', 33333)
     UDPSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Create socket
     UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
