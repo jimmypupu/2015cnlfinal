@@ -7,13 +7,26 @@ from cipher import *
 import threading
 import netifaces
 import base64
+import netaddr
 network = netifaces.interfaces()
 ip = []
 for i in network:
     try:
-        tmp = netifaces.ifaddresses(i)[2][0]['addr']
-        if tmp != "127.0.0.1":
-            ip.append(tmp)
+	addrs = netifaces.ifaddresses(i)
+	ipinfo = addrs[socket.AF_INET][0]
+	address = ipinfo['addr']
+	netmask = ipinfo['netmask']
+	cidr = netaddr.IPNetwork('%s/%s' % (address, netmask))
+	network = cidr.network
+	print 'Network info for %s:' % i
+	print '--'
+	print 'address:', address
+	print 'netmask:', netmask
+	print '   cidr:', cidr
+	print 'network:', network
+#        tmp = netifaces.ifaddresses(i)[2][0]['addr']
+        if str(address) != "127.0.0.1":
+            ip.append(str(network))
     except BaseException:
         pass
 print ip
