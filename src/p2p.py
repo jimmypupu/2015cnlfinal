@@ -73,10 +73,10 @@ def broadcast(threadName):
     global ip
     exit_flag = 0
     addr = []
-    print ip
+#    print ip
     for i in ip:
         addr.append((i[1], 33333))
-    print addr
+#    print addr
 #    addr = ('255.255.255.255', 33333)
     UDPSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Create socket
     UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -97,7 +97,7 @@ def broadcast(threadName):
         for i in range(0, 4-len(tmp)):                          
             tmp = "0"+tmp
         packet += tmp
-        print packet
+#        print packet
         for i in addr:
             if UDPSock.sendto(packet, i):
 #        if UDPSock.sendto(packet, addr):
@@ -162,7 +162,7 @@ def receiver(threadName):
 #            print "%s: Refresh an old node from addr %s" %(threadName, broadaddr)
             exists = 1
             if fing_table[broadfinger][1] >= broadhop:
-                print fing_table[broadfinger][1], broadhop
+#                print fing_table[broadfinger][1], broadhop
                 exists = 0
                 fing_table[broadfinger] = [broadaddr, broadhop, broadpublic, 0]
             fing_table[broadfinger][3] = 0
