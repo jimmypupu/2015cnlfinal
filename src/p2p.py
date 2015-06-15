@@ -143,7 +143,7 @@ def receiver(threadName):
         broadpublic = data[19:(19+broadplen)]
         broadfinger = data[(19+broadplen):(51+broadplen)]
 #       print broadfinger
-        broadhop = int(data[(51+broadplen):(54+broadplen)]) 
+        broadhop = int(data[(51+broadplen):(55+broadplen)]) 
         itself = 1
         for i in range(0, len(fingerprint)):
             if fingerprint[i] != broadfinger[i]:
@@ -161,8 +161,8 @@ def receiver(threadName):
         else:
 #            print "%s: Refresh an old node from addr %s" %(threadName, broadaddr)
             exists = 1
-            if fing_table[broadfinger][1] < broadhop:
-		print fing_table[broadfinger][1], broadhop
+            if fing_table[broadfinger][1] <= broadhop:
+                print fing_table[broadfinger][1], broadhop
                 exists = 0
                 fing_table[broadfinger] = [broadaddr, broadhop, broadpublic, 0]
             fing_table[broadfinger][3] = 0
