@@ -169,9 +169,10 @@ def receiver(threadName):
 
         if len(ip) >= 2 and exists == 0:
             packet = ""
-            tmp = str(socket.gethostbyname(socket.gethostname()))   #add address
-            for i in range(0, 15-len(tmp)):
-                tmp = "0"+tmp
+            tmp = ""   #add address
+            for i in range(0, 15):
+                tmp = "0"
+            packet += tmp
             packet += data[15:19]                                     #public key len
             packet += broadpublic                                   #public key 
             packet += broadfinger                                   #hop number
