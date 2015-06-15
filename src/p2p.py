@@ -171,7 +171,7 @@ def receiver(threadName):
             packet = ""
             tmp = ""   #add address
             for i in range(0, 15):
-                tmp = "0"
+                tmp += "0"
             packet += tmp
             packet += data[15:19]                                     #public key len
             packet += broadpublic                                   #public key 
