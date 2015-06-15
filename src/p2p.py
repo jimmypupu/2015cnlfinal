@@ -124,7 +124,6 @@ def receiver(threadName):
     UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     UDPSock.bind(addr)
     
-    addrb = ('255.255.255.255', 33334)
     addrb = []
     print ip
     for i in ip:
@@ -135,6 +134,7 @@ def receiver(threadName):
     while True:
         data, addr = UDPSock.recvfrom(1024)
         i = 0
+        print addr
         broadaddr = addr[0]
         broadplen = int(data[15:19])
         broadpublic = data[19:(19+broadplen)]
