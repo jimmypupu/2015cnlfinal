@@ -98,8 +98,11 @@ def broadcast(threadName):
             tmp = "0"+tmp
         packet += tmp
 #        print packet
+        n = 0
         for i in addr:
-            if UDPSock.sendto(packet, i):
+            rpacket = packet+str(33333+n)
+            n += 1
+            if UDPSock.sendto(rpacket, i):
 #        if UDPSock.sendto(packet, addr):
                 print "%s: Sending message to %s..." %(threadName, i)
 #            tmp = []
@@ -143,7 +146,8 @@ def receiver(threadName):
         broadpublic = data[19:(19+broadplen)]
         broadfinger = data[(19+broadplen):(51+broadplen)]
 #       print broadfinger
-        broadhop = int(data[(51+broadplen):(55+broadplen)]) 
+        broadhop = int(data[(51+broadplen):(55+broadplen)])
+        broadport = int(data[(55+broadplen):(60+broadplen)])
         itself = 1
         for i in range(0, len(fingerprint)):
             if fingerprint[i] != broadfinger[i]:
@@ -157,14 +161,13 @@ def receiver(threadName):
         exists = 0
         if broadfinger not in fing_table:
             print "%s: Find new node from addr %s" %(threadName, broadaddr)
-            fing_table[broadfinger] = [broadaddr, broadhop, broadpublic, 0]
+            fing_table[broadfinger] = [broadaddr, broadhop, broadpublic, 0, broadport]
         else:
 #            print "%s: Refresh an old node from addr %s" %(threadName, broadaddr)
             exists = 1
             if fing_table[broadfinger][1] >= broadhop:
-#                print fing_table[broadfinger][1], broadhop
                 exists = 0
-                fing_table[broadfinger] = [broadaddr, broadhop, broadpublic, 0]
+                fing_table[broadfinger] = [broadaddr, broadhop, broadpublic, 0, broadport]
             fing_table[broadfinger][3] = 0
         exit_flag = 0
 
@@ -182,7 +185,10 @@ def receiver(threadName):
             for i in range(0, 4-len(tmp)):                          
                 tmp = "0"+tmp
             packet += tmp
+            n = 0
             for i in addrb:
+                rpacket = packet + str(33333+n)
+                n += 1
                 UDPSock.sendto(packet, i)
                 print "%s: Transfer message to %s... %s" %(threadName, i, broadhop)
 #        print "%s: From addr: '%s'" %(threadName, addr[0])
@@ -213,14 +219,15 @@ def tcp_receiver(threadName, threadnum):
             print "%s: Not being destination, transfer..." %(threadName)
             if destfinger not in fing_table:
                 print "%s: Such node doesn't exist." %threadName
+                continue
             tmp = fing_table[desfinger]
             TCP_IP = tmp[0]
-            TCP_PORT = 33333
+            TCP_PORT = tmp[4]
             BUFFER_SIZE = 1024
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((TCP_IP, TCP_PORT))
-            s.send(data)
-            s.close()
+            s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s2.connect((TCP_IP, TCP_PORT))
+            s2.send(data)
+            s2.close()
             print "%s: Transfer finished." %threadName
 
         conn.close()
@@ -274,7 +281,7 @@ while 1:
         TCP_IP = tmp[0]
         print len(ips)
         data = ips+cip
-        TCP_PORT = 33333
+        TCP_PORT = tmp[4]
         BUFFER_SIZE = 1024
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
