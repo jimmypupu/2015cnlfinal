@@ -56,13 +56,14 @@ class receiver_thread (threading.Thread):
         receiver(self.name)
         print "Exiting " + self.name
 class Tcp_receiver (threading.Thread):
-    def __init__(self, threadID, name):
+    def __init__(self, threadID, name, threadnum):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
+        self.threadnum = threadnum
     def run(self):
         print "Starting " + self.name
-        tcp_receiver(self.name)
+        tcp_receiver(self.name, self.threadnum)
         print "Exiting " + self.name
 
 def broadcast(threadName):
@@ -96,9 +97,9 @@ def broadcast(threadName):
             tmp = "0"+tmp
         packet += tmp
         for i in addr:
-            UDPSock.sendto(packet, i)
+            if UDPSock.sendto(packet, i):
 #        if UDPSock.sendto(packet, addr):
-#            print "%s: Sending message ..." %threadName
+                print "%s: Sending message to %s..." %(threadName, i)
 #            tmp = []
         time.sleep(5)
         while exit_flag == 1:
@@ -138,7 +139,7 @@ def receiver(threadName):
         broadplen = int(data[15:19])
         broadpublic = data[19:(19+broadplen)]
         broadfinger = data[(19+broadplen):(51+broadplen)]
-#        print broadfinger
+#       print broadfinger
         broadhop = int(data[(51+broadplen):(54+broadplen)]) 
         itself = 1
         for i in range(0, len(fingerprint)):
@@ -181,14 +182,14 @@ def receiver(threadName):
 #        print "%s: From addr: '%s'" %(threadName, addr[0])
 #        print "%s: hop number = %s" %(threadName, broadhop)
     UDPSock.close()
-def tcp_receiver(threadName):
+def tcp_receiver(threadName, threadnum):
     global fing_table
     global exit_flag
     global c
     global fingerprint
     global ip
-    TCP_IP = ip[0][0]
-    TCP_PORT = 33333
+    TCP_IP = ip[threadnum][0]
+    TCP_PORT = 33333+threadnum
     BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((TCP_IP, TCP_PORT))
@@ -224,9 +225,10 @@ thread1.start()
 thread2 = receiver_thread(2, "Receiver_thread")
 thread2.daemon = True
 thread2.start()
-thread3 = Tcp_receiver(3, "TCP_receiver")
-thread3.daemon = True
-thread3.start()
+for i in range(0, len(ip)):
+    thread3 = Tcp_receiver(3, "TCP_receiver", i)
+    thread3.daemon = True
+    thread3.start()
 
 #main part:
 # function: list IP, send to a IP, received from a IP
