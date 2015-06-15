@@ -117,12 +117,18 @@ def broadcast(threadName):
 def receiver(threadName):
     global exit_flag
     global fing_table
+    global ip
     addr = ('', 33333)
     UDPSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     UDPSock.bind(addr)
     
     addrb = ('255.255.255.255', 33334)
+    addrb = []
+    print ip
+    for i in ip:
+        addrb.append((i[1], 33333))
+    print addrb
 
     # Receive messages
     while True:
@@ -169,7 +175,8 @@ def receiver(threadName):
             for i in range(0, 4-len(tmp)):                          
                 tmp = "0"+tmp
             packet += tmp
-            if UDPSock.sendto(packet, addr):
+            for i in addrb:
+                UDPSock.sendto(packet, i)
                 print "%s: Transfer message ..." %threadName
 #        print "%s: From addr: '%s'" %(threadName, addr[0])
 #        print "%s: hop number = %s" %(threadName, broadhop)
