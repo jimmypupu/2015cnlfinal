@@ -56,8 +56,12 @@ class Tcp_receiver (threading.Thread):
 def broadcast(threadName):
     global exit_flag
     global fing_table
+    global ip
     exit_flag = 0
-    addr = ('255.255.255.255', 33333)
+    addr = []
+    for i in ip:
+        addr = addr.append((i, 33333))
+#    addr = ('255.255.255.255', 33333)
     UDPSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # Create socket
     UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     hopnum = 0
@@ -77,9 +81,11 @@ def broadcast(threadName):
         for i in range(0, 4-len(tmp)):                          
             tmp = "0"+tmp
         packet += tmp
-        if UDPSock.sendto(packet, addr):
+        for i in addr:
+            UDPSock.sendto(packet, i)
+#        if UDPSock.sendto(packet, addr):
 #            print "%s: Sending message ..." %threadName
-            tmp = []
+#            tmp = []
         time.sleep(5)
         while exit_flag == 1:
             sleep(1)
