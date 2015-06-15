@@ -180,7 +180,7 @@ def tcp_receiver(threadName):
     global c
     global fingerprint
     global ip
-    TCP_IP = ip[0][1]
+    TCP_IP = ip[0][0]
     TCP_PORT = 33333
     BUFFER_SIZE = 1024
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
