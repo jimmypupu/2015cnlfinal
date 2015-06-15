@@ -97,6 +97,7 @@ def broadcast(threadName):
         for i in range(0, 4-len(tmp)):                          
             tmp = "0"+tmp
         packet += tmp
+        print packet
         for i in addr:
             if UDPSock.sendto(packet, i):
 #        if UDPSock.sendto(packet, addr):
@@ -136,6 +137,7 @@ def receiver(threadName):
         data, addr = UDPSock.recvfrom(1024)
         i = 0
         print addr
+        print data
         broadaddr = addr[0]
         broadplen = int(data[15:19])
         broadpublic = data[19:(19+broadplen)]
