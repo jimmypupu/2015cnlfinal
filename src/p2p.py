@@ -10,6 +10,7 @@ import base64
 import netaddr
 network = netifaces.interfaces()
 ip = []
+mode = 0        #UI mode: 0, debugmode: 1
 for i in network:
     try:
     	addrs = netifaces.ifaddresses(i)
@@ -73,6 +74,7 @@ def broadcast(threadName):
     global exit_flag
     global fing_table
     global ip
+    global mode
     exit_flag = 0
     addr = []
 #    print ip
@@ -105,9 +107,8 @@ def broadcast(threadName):
             rpacket = packet+str(33333+n)
             n += 1
             if UDPSock.sendto(rpacket, i):
-#        if UDPSock.sendto(packet, addr):
-#                print "%s: Sending message to %s..." %(threadName, i)
-                tmp = []
+                if mode == 1:
+                    print "%s: Sending message to %s..." %(threadName, i)
         time.sleep(10)
         while exit_flag == 1:
             sleep(1)
@@ -117,7 +118,10 @@ def broadcast(threadName):
             fing_table[i][3] += 5
             if fing_table[i][3] > 30:
                 del_list.append(i)
-                print "%s: deleted a node" %threadName
+                if mode == 0:
+                    print "%s: A node leaved the net: Fingerprint = %s" %(threadName, i.encode("hex")[0:10])
+                if mode == 1:
+                    print "%s: deleted a node, fingerprint = %s" %(threadName, i.encode("hex")[0:10])
         for i in del_list:
             del fing_table[i]
         exit_flag = 0
@@ -126,28 +130,24 @@ def receiver(threadName):
     global exit_flag
     global fing_table
     global ip
+    global mode
     addr = ('', 33333)
     UDPSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     UDPSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     UDPSock.bind(addr)
     
     addrb = []
-#    print ip
     for i in ip:
         addrb.append((i[1], 33333))
-#    print addrb
 
     # Receive messages
     while True:
         data, addr = UDPSock.recvfrom(1024)
         i = 0
-#        print addr
-#        print data
         broadaddr = addr[0]
         broadplen = int(data[15:19])
         broadpublic = data[19:(19+broadplen)]
         broadfinger = data[(19+broadplen):(51+broadplen)]
-#       print broadfinger
         broadhop = int(data[(51+broadplen):(55+broadplen)])
         broadport = int(data[(55+broadplen):(60+broadplen)])
         itself = 1
@@ -165,7 +165,8 @@ def receiver(threadName):
             print "%s: Find new node on the Net!!\n                 From addr: %s\tFingerprint: %s" %(threadName, broadaddr, broadfinger.encode("hex")[0:10])
             fing_table[broadfinger] = [broadaddr, broadhop, broadpublic, 0, broadport]
         else:
-#            print "%s: Refresh an old node from addr %s" %(threadName, broadaddr)
+            if mode == 1:
+                print "%s: Refresh an old node from addr %s" %(threadName, broadaddr)
             exists = 1
             if fing_table[broadfinger][1] >= broadhop:
                 exists = 0
@@ -192,9 +193,8 @@ def receiver(threadName):
                 rpacket = packet + str(33333+n)
                 n += 1
                 UDPSock.sendto(rpacket, i)
-                print "%s: Transfer message to %s... %s" %(threadName, i, broadhop)
-#        print "%s: From addr: '%s'" %(threadName, addr[0])
-#        print "%s: hop number = %s" %(threadName, broadhop)
+                if mode == 1:
+                    print "%s: Transfer message to %s... %s" %(threadName, i, broadhop)
     UDPSock.close()
 def tcp_receiver(threadName, threadnum):
     global fing_table
@@ -202,6 +202,7 @@ def tcp_receiver(threadName, threadnum):
     global c
     global fingerprint
     global ip
+    global mode
     TCP_IP = ip[threadnum][0]
     TCP_PORT = 33333+threadnum
     BUFFER_SIZE = 1024
@@ -214,13 +215,19 @@ def tcp_receiver(threadName, threadnum):
         desfinger = data[0:32]
         if desfinger == fingerprint:
             cip = [data[32:len(data)]]
-            print "%s: datalen = %s" %(threadName, len(data))
+            if mode == 1:
+                print "%s: datalen = %s" %(threadName, len(data))
             plain = c.decrypt(cip)
-            print "%s: received data: %s" %(threadName, plain)
+            if mode == 1:
+                print "%s: received data: %s" %(threadName, plain)
+            else:
+                print "%s: %s said to you: %s" %(threadName, desfinger.encode("hex")[0:10], plain)
         else:
-            print "%s: Not being destination, transfer..." %(threadName)
+            if mode == 1:
+                print "%s: Not being destination, transfer..." %(threadName)
             if desfinger not in fing_table:
-                print "%s: Such node doesn't exist." %threadName
+                if mode == 1:
+                    print "%s: Such node doesn't exist." %threadName
                 continue
             tmp = fing_table[desfinger]
             TCP_IP = tmp[0]
@@ -230,7 +237,8 @@ def tcp_receiver(threadName, threadnum):
             s2.connect((TCP_IP, TCP_PORT))
             s2.send(data)
             s2.close()
-            print "%s: Transfer finished." %threadName
+            if mode == 1:
+                print "%s: Transfer finished." %threadName
 
         conn.close()
 
@@ -249,11 +257,13 @@ for i in range(0, len(ip)):
 # function: list IP, send to a IP, received from a IP
 print "Entering 'list' to show how many nodes on this network."
 print "Entering 'send' to check which node to send."
+print "Enterinf 'chmod' to change mod."
 while 1:
     cmd = sys.stdin.readline().split('\n')[0]
-    if cmd != 'list' and cmd != 'send':
+    if cmd != 'list' and cmd != 'send' and cmd != 'chmod':
         print "Entering 'list' to show how many nodes on this network."
         print "Entering 'send' to check which node to send."
+        print "Enterinf 'chmod' to change mod."
     if cmd == 'list':
         tmp = []
         for ips in fing_table:
@@ -298,5 +308,15 @@ while 1:
         s.send(data)
         s.close()
         print "send finished."
+    if cmd == 'chmod':
+        print "Input the mode you want to change(0: UI mode, 1: debug mode):"
+        try:
+            i = int(sys.stdin.readline().split('\n')[0])-1
+        except BaseException:
+            print "please enter 0/1."
+            continue
+        if i != 0 and i != 1:
+            print "please enter 0/1."
+        mode = i
 
 print "Existing Main thread"
