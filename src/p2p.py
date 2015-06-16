@@ -18,23 +18,25 @@ for i in network:
     	netmask = ipinfo['netmask']
     	cidr = netaddr.IPNetwork('%s/%s' % (address, netmask))
     	network = cidr.network
+        """
     	print 'Network info for %s:' % i
     	print '--'
     	print 'address:', address
     	print 'netmask:', netmask
     	print '   cidr:', cidr
-    	print 'network:', network
+    	print 'network:', network"""
         if str(address) != "127.0.0.1":
             ips = netaddr.IPNetwork(str(cidr))
             ip.append((str(address), str(ips.broadcast)))
     except BaseException:
         pass
+print "Here's the net you attached to:"
 print ip
 
 c = Cipher('mykey.pem', gen_key=True)
 publickey = base64.b64encode(c.get_publickey())
 fingerprint = c.get_fingerprint()
-print "fingerprint: %s" %fingerprint.encode("hex")[0:10]
+print "Your own Fingerprint: %s" %fingerprint.encode("hex")[0:10]
 fing_table = {}
 exit_flag = None
 
@@ -104,8 +106,8 @@ def broadcast(threadName):
             n += 1
             if UDPSock.sendto(rpacket, i):
 #        if UDPSock.sendto(packet, addr):
-                print "%s: Sending message to %s..." %(threadName, i)
-#            tmp = []
+#                print "%s: Sending message to %s..." %(threadName, i)
+                tmp = []
         time.sleep(5)
         while exit_flag == 1:
             sleep(1)
@@ -130,10 +132,10 @@ def receiver(threadName):
     UDPSock.bind(addr)
     
     addrb = []
-    print ip
+#    print ip
     for i in ip:
         addrb.append((i[1], 33333))
-    print addrb
+#    print addrb
 
     # Receive messages
     while True:
@@ -160,7 +162,7 @@ def receiver(threadName):
         exit_flag = 1
         exists = 0
         if broadfinger not in fing_table:
-            print "%s: Find new node from addr %s" %(threadName, broadaddr)
+            print "%s: Find new node on the Net!!\n                 From addr: %s\tFingerprint: %s" %(threadName, broadaddr, broadfinger.encode("hex")[0:10])
             fing_table[broadfinger] = [broadaddr, broadhop, broadpublic, 0, broadport]
         else:
 #            print "%s: Refresh an old node from addr %s" %(threadName, broadaddr)
@@ -257,7 +259,7 @@ while 1:
         for ips in fing_table:
             tmp.append(ips)
         for i in range(0, len(tmp)):
-            print "No:%s\tAddr:%s\tHop:%s\tFingerprint:%s" %(i+1, fing_table[tmp[i]][0], fing_table[tmp[i]][1], ips.encode("hex")[0:10])
+            print "No: %s\tAddr: %s\tHop: %s\tFingerprint: %s" %(i+1, fing_table[tmp[i]][0], fing_table[tmp[i]][1], ips.encode("hex")[0:10])
         if tmp == []:
             print "No available node on this net"
     if cmd == 'send':
