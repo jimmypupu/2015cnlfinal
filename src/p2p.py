@@ -217,7 +217,7 @@ def tcp_receiver(threadName, threadnum):
             print "%s: received data: %s" %(threadName, plain)
         else:
             print "%s: Not being destination, transfer..." %(threadName)
-            if destfinger not in fing_table:
+            if desfinger not in fing_table:
                 print "%s: Such node doesn't exist." %threadName
                 continue
             tmp = fing_table[desfinger]
