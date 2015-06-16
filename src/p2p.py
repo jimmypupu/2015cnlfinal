@@ -262,7 +262,14 @@ while 1:
             print "No available node on this net"
     if cmd == 'send':
         print "Input the number you want to send:"
-        transfer = int(sys.stdin.readline().split('\n')[0])-1
+        try:
+            transfer = int(sys.stdin.readline().split('\n')[0])-1
+        except BaseException:
+            print "please enter the node nubmer in the 'list'"
+            continue
+        if len(fing_table) == 0:
+            print "No node on the net yet"
+            continue
         i = 0
         for ips in fing_table:
             if i == transfer:
