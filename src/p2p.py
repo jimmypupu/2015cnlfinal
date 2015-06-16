@@ -282,6 +282,8 @@ while 1:
         if len(fing_table) == 0:
             print "No node on the net yet"
             continue
+        if transfer <= 0:
+            print "please enter the node nubmer in the 'list'"
         i = 0
         for ips in fing_table:
             if i == transfer:
@@ -311,7 +313,7 @@ while 1:
     if cmd == 'chmod':
         print "Input the mode you want to change(0: UI mode, 1: debug mode):"
         try:
-            i = int(sys.stdin.readline().split('\n')[0])-1
+            i = int(sys.stdin.readline().split('\n')[0])
         except BaseException:
             print "please enter 0/1."
             continue
