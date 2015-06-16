@@ -108,14 +108,14 @@ def broadcast(threadName):
 #        if UDPSock.sendto(packet, addr):
 #                print "%s: Sending message to %s..." %(threadName, i)
                 tmp = []
-        time.sleep(5)
+        time.sleep(10)
         while exit_flag == 1:
             sleep(1)
         exit_flag = 1
         del_list = []
         for i in fing_table:
             fing_table[i][3] += 5
-            if fing_table[i][3] > 15:
+            if fing_table[i][3] > 30:
                 del_list.append(i)
                 print "%s: deleted a node" %threadName
         for i in del_list:
