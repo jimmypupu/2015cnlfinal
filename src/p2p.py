@@ -34,7 +34,7 @@ print ip
 c = Cipher('mykey.pem', gen_key=True)
 publickey = base64.b64encode(c.get_publickey())
 fingerprint = c.get_fingerprint()
-print "fingerprint: %s" %fingerprint
+print "fingerprint: %s" %fingerprint.encode("hex")[0:10]
 fing_table = {}
 exit_flag = None
 
@@ -257,7 +257,7 @@ while 1:
         for ips in fing_table:
             tmp.append(ips)
         for i in range(0, len(tmp)):
-            print "No:%s\tAddr:%s\tHop:%s" %(i+1, fing_table[tmp[i]][0], fing_table[tmp[i]][1])
+            print "No:%s\tAddr:%s\tHop:%s\tFingerprint:%s" %(i+1, fing_table[tmp[i]][0], fing_table[tmp[i]][1], ips.encode("hex")[0:10])
         if tmp == []:
             print "No available node on this net"
     if cmd == 'send':
