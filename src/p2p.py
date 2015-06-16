@@ -116,7 +116,7 @@ def broadcast(threadName):
         del_list = []
         for i in fing_table:
             fing_table[i][3] += 5
-            if fing_table[i][3] > 30:
+            if fing_table[i][3] >= 30:
                 del_list.append(i)
                 if mode == 0:
                     print "%s: A node leaved the net: Fingerprint = %s" %(threadName, i.encode("hex")[0:10])
@@ -269,7 +269,7 @@ while 1:
         for ips in fing_table:
             tmp.append(ips)
         for i in range(0, len(tmp)):
-            print "No: %s\tAddr: %s\tHop: %s\tFingerprint: %s" %(i+1, fing_table[tmp[i]][0], fing_table[tmp[i]][1], ips.encode("hex")[0:10])
+            print "No: %s\tAddr: %s\tHop: %s\tFingerprint: %s" %(i+1, fing_table[tmp[i]][0], fing_table[tmp[i]][1], tmp[i].encode("hex")[0:10])
         if tmp == []:
             print "No available node on this net"
     if cmd == 'send':
@@ -319,6 +319,7 @@ while 1:
             continue
         if i != 0 and i != 1:
             print "please enter 0/1."
+            continue
         mode = i
 
 print "Existing Main thread"
