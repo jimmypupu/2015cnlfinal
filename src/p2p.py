@@ -221,7 +221,7 @@ def tcp_receiver(threadName, threadnum):
             if mode == 1:
                 print "%s: received data: %s" %(threadName, plain)
             else:
-                print "%s: %s said to you: %s" %(threadName, desfinger.encode("hex")[0:10], plain)
+                print "%s: %s said to you: %s" %(threadName, plain[0:32].encode("hex")[0:10], plain[32:len(plain)])
         else:
             if mode == 1:
                 print "%s: Not being destination, transfer..." %(threadName)
@@ -298,9 +298,10 @@ while 1:
         f.close()
         otherskey = Cipher('other_key.pem', gen_key=False)
         data = sys.stdin.readline().split('\n')[0]
-        cip = otherskey.encrypt(data)[0]
+        packet = fingerprint + data
+        cip = otherskey.encrypt(packet)[0]
         TCP_IP = tmp[0]
-        print len(ips)
+#        print len(ips)
         data = ips+cip
         TCP_PORT = tmp[4]
         BUFFER_SIZE = 1024
